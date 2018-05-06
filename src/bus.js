@@ -8,9 +8,10 @@ const post = function (url, params) {
   return new Promise((resolve, reject) => {
     Axios.post(`${path}${url}`, params)
       .then((response) => {
-        resolve(response)
+        resolve(response.data)
       })
       .then((response) => {
+        // console.warn('wrong', response)
         reject(response)
       })
   })
