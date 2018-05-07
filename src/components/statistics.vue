@@ -5,20 +5,36 @@
         <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
         <el-breadcrumb-item>{{currentNav}}</el-breadcrumb-item>
       </el-breadcrumb>
+      <el-button
+        type="success"
+        size="small"
+        class="add-button">
+        导出
+      </el-button>
+    </div>
 
+    <div class="panel">
+      <el-button @click="toggleExpansion">{{expandButtonText}}</el-button>
       <el-date-picker
         v-model="month"
         type="month"
-        placeholder="选择月">
+        @change="handleMonth"
+        :picker-options="pickerOptions"
+        :editable="false"
+        :clearable="false"
+        placeholder="按月筛选">
       </el-date-picker>
     </div>
 
     <el-table
+      ref="table"
       class="table-list"
       :data="tableData"
       :height="tableHeight"
       show-summary
-      style="width=100%">
+      style="width=100%"
+      header-row-class-name="head-bg"
+      @expand-change="handleExpandChange">
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-table
@@ -81,7 +97,8 @@
 </template>
 
 <script>
-import { post } from '@/bus'
+import { axios } from '@/bus'
+let lazy
 
 // 计算Table高度
 const tableHeight = window.innerHeight - (60 + 15 + 40 + 43 + 52)
@@ -97,9 +114,14 @@ export default {
   data () {
     return {
       tableData: [],
-      sumary: [],
       tableHeight: tableHeight,
-      month: ''
+      month: new Date(),
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now()
+        }
+      },
+      expandButtonText: '全部展开'
     }
   },
 
@@ -107,14 +129,38 @@ export default {
     getList () {
       const url = 'Statistics.html'
       const params = {
-        month: this.month
+        month: this.month.getMonth()
       }
 
-      post(url, params)
+      axios(url, params)
         .then((data) => {
           this.tableData = data.result
-          this.sumary = data.sumary
         })
+    },
+
+    // 监听月份筛选
+    handleMonth (value) {
+      this.getList()
+    },
+
+    // 全部展开、全部折叠
+    toggleExpansion () {
+      this.tableData.forEach(row => {
+        this.$refs.table.toggleRowExpansion(row)
+      })
+    },
+
+    // 监听展开状态
+    handleExpandChange (row, expandedRows) {
+      clearTimeout(lazy)
+      lazy = setTimeout(() => {
+        this.changeExpandButtonText(expandedRows)
+      }, 50)
+    },
+
+    // 改变展开、折叠按钮文字
+    changeExpandButtonText (value) {
+      this.expandButtonText = value.length ? '全部折叠' : '全部展开'
     }
   },
   filters: {
@@ -141,10 +187,17 @@ export default {
       height: 35px;
       border-bottom: 5px solid #ebeef5;
       padding: 3px 0 0 10px;
-      .el-date-editor {
+      .add-button {
         position: absolute;
         right: 10px;
         top: -7px;
+      }
+    }
+    .panel {
+      margin-top: 20px;
+      text-align: right;
+      .el-button{
+        float: left;
       }
     }
     .table-list {
@@ -161,6 +214,16 @@ export default {
     .main-foot {
       margin-top: 20px;
       text-align: right;
+    }
+  }
+
+</style>
+<style lang="less">
+  .el-table {
+    .head-bg {
+      th {
+        background-color: #f5f7fa;
+      }
     }
   }
 </style>

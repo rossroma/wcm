@@ -100,7 +100,7 @@
 </template>
 
 <script>
-import { post } from '@/bus'
+import { axios } from '@/bus'
 const originForm = {
   userName: '',
   date1: '',
@@ -190,7 +190,6 @@ export default {
         date2: copyItem.endTime.slice(0, 10),
         time2: copyItem.endTime.slice(11)
       }
-      console.log(this.form)
     },
 
     // 监听开井日期的变化
@@ -248,7 +247,7 @@ export default {
         id: this.form.id || 0,
         data: data
       }
-      post(url, params)
+      axios(url, params)
         .then((data) => {
           this.$message({
             type: 'success',
@@ -267,7 +266,6 @@ export default {
     },
 
     closeDialog () {
-      console.log('关闭弹窗')
       this.$emit('close')
     }
   },

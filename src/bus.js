@@ -4,14 +4,13 @@ import Axios from 'axios'
 const path = process.env.NODE_ENV === 'production' ? '/' : 'http://yapi.xbongbong.com/mock/45/'
 
 // post请求
-const post = function (url, params) {
+const axios = function (url, params, method = 'post') {
   return new Promise((resolve, reject) => {
-    Axios.post(`${path}${url}`, params)
+    Axios[method](`${path}${url}`, params)
       .then((response) => {
         resolve(response.data)
       })
       .then((response) => {
-        // console.warn('wrong', response)
         reject(response)
       })
   })
@@ -34,6 +33,6 @@ const storage = function () {
 
 export {
   path,
-  post,
+  axios,
   storage
 }

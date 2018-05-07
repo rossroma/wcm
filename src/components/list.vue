@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { post } from '@/bus'
+import { axios } from '@/bus'
 import Item from '@/components/item'
 
 // 计算Table高度
@@ -152,7 +152,7 @@ export default {
       if (this.isRecycle) {
         params.status = 1
       }
-      post(url, params)
+      axios(url, params)
         .then((data) => {
           this.tableData = data.result
           this.pageInfos = data.pageInfos
@@ -200,7 +200,7 @@ export default {
         id: id,
         status: status
       }
-      post(url, params)
+      axios(url, params)
         .then((data) => {
           this.$message({
             type: 'success',
@@ -226,7 +226,7 @@ export default {
       const params = {
         id: id
       }
-      post(url, params)
+      axios(url, params)
         .then((data) => {
           this.$message({
             type: 'success',
