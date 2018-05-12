@@ -129,7 +129,7 @@ export default {
     getList () {
       const url = 'Statistics.html'
       const params = {
-        month: this.month.getMonth()
+        month: this.month.getTime()
       }
 
       axios(url, params)

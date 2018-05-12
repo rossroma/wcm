@@ -155,7 +155,7 @@ export default {
       axios(url, params)
         .then((data) => {
           this.tableData = data.result
-          this.pageInfos = data.pageInfos
+          this.pageInfos.count = data.count
         })
     },
 

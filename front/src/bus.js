@@ -1,7 +1,8 @@
 import Axios from 'axios'
+import {Message} from 'element-ui'
 
 // 根据环境自动切换path地址
-const path = process.env.NODE_ENV === 'production' ? '/' : 'http://yapi.xbongbong.com/mock/45/'
+const path = process.env.NODE_ENV === 'production' ? '/' : '/api/'
 
 // post请求
 const axios = function (url, params, method = 'post') {
@@ -9,9 +10,15 @@ const axios = function (url, params, method = 'post') {
     Axios[method](`${path}${url}`, params)
       .then((response) => {
         resolve(response.data)
-      })
-      .then((response) => {
-        reject(response)
+        if (response.data.code === 1) {
+          resolve(response.data)
+        } else {
+          Message({
+            type: 'error',
+            message: response.data.msg
+          })
+          reject(response.data)
+        }
       })
   })
 }

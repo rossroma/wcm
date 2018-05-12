@@ -1,9 +1,12 @@
 .DS_Store
+node_modules/
+npm-debug.log
+conf.js
 front/node_modules/
 front/npm-debug.log*
 front/yarn-debug.log*
 front/yarn-error.log*
-front//test/unit/coverage/
+front/test/unit/coverage/
 
 # Editor directories and files
 .idea
