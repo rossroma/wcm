@@ -82,7 +82,7 @@
     <div class="main-foot">
       <el-pagination
         background
-        layout="prev, pager, next, sizes"
+        layout="prev, pager, next, sizes, total"
         :total="pageInfos.count"
         :page-sizes="[10, 20, 50, 100]"
         :page-size="pageInfos.size"
@@ -91,7 +91,12 @@
       </el-pagination>
     </div>
 
-    <Item v-if="isItemShow" :item="item" @close="isItemShow = false"></Item>
+    <Item
+      v-if="isItemShow"
+      :item="item"
+      @close="isItemShow = false"
+      @refresh="getList">
+    </Item>
   </div>
 </template>
 
@@ -206,6 +211,9 @@ export default {
             type: 'success',
             message: data.msg
           })
+
+          // 刷新列表
+          this.getList()
         })
     },
 
@@ -232,6 +240,9 @@ export default {
             type: 'success',
             message: data.msg
           })
+
+          // 刷新列表
+          this.getList()
         })
     }
   },

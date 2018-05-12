@@ -8,7 +8,7 @@
       <div class="form-wrap" v-if="editStatus">
         <el-form ref="form" :model="form" label-width="120px" :rules="rules">
           <el-form-item label="姓名" prop="userName">
-            <el-input v-model="form.userName"></el-input>
+            <el-input v-model="form.userName" @blur="trimValue"></el-input>
           </el-form-item>
           <el-form-item label="开井时间">
             <el-col :span="11">
@@ -192,6 +192,11 @@ export default {
       }
     },
 
+    // 对userName进行trim
+    trimValue (value) {
+      this.form.userName = this.form.userName.trim()
+    },
+
     // 监听开井日期的变化
     handleStartDate (value) {
       this.$set(this.form, 'date2', value)
@@ -255,12 +260,18 @@ export default {
           })
           this.$set(this.form, 'id', data.id)
           this.editStatus = false
+          this.$emit('refresh')
         })
     },
 
     // 继续添加
     continueAdd () {
-      this.form = Object.assign({}, originForm)
+      // 智能添加默认值
+      const copyForm = Object.assign({}, originForm)
+      copyForm.date1 = this.form.date2
+      copyForm.date2 = this.form.date2
+      copyForm.time1 = this.form.time2
+      this.form = copyForm
 
       this.editStatus = true
     },

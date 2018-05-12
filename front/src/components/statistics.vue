@@ -6,6 +6,7 @@
         <el-breadcrumb-item>{{currentNav}}</el-breadcrumb-item>
       </el-breadcrumb>
       <el-button
+        disabled
         type="success"
         size="small"
         class="add-button">
@@ -18,6 +19,7 @@
       <el-date-picker
         v-model="month"
         type="month"
+        style="width: 120px"
         @change="handleMonth"
         :picker-options="pickerOptions"
         :editable="false"
@@ -34,6 +36,7 @@
       show-summary
       style="width=100%"
       header-row-class-name="head-bg"
+      :summary-method="computedSummary"
       @expand-change="handleExpandChange">
       <el-table-column type="expand">
         <template slot-scope="props">
@@ -48,13 +51,13 @@
             <el-table-column
               label="开井时间">
               <template slot-scope="scope">
-                {{ scope.row.startTime }}
+                {{ scope.row.startTime | formatDateTime}}
               </template>
             </el-table-column>
             <el-table-column
               label="关井时间">
               <template slot-scope="scope">
-                {{ scope.row.endTime }}
+                {{ scope.row.endTime | formatDateTime }}
               </template>
             </el-table-column>
             <el-table-column
@@ -114,6 +117,12 @@ export default {
   data () {
     return {
       tableData: [],
+      // 统计信息
+      summary: {
+        count: 0,
+        period: 0,
+        cost: 0
+      },
       tableHeight: tableHeight,
       month: new Date(),
       pickerOptions: {
@@ -135,6 +144,7 @@ export default {
       axios(url, params)
         .then((data) => {
           this.tableData = data.result
+          this.summary = data.summary
         })
     },
 
@@ -161,13 +171,23 @@ export default {
     // 改变展开、折叠按钮文字
     changeExpandButtonText (value) {
       this.expandButtonText = value.length ? '全部折叠' : '全部展开'
+    },
+
+    // 计算统计信息
+    computedSummary ({ columns, data }) {
+      return ['', '总计', this.summary.count, this.summary.period, this.summary.cost]
     }
   },
+
   filters: {
     toHHMM (value) {
       const hh = Math.floor(value / 60)
       const mm = value % 60
       return `${hh}时${mm}分`
+    },
+
+    formatDateTime (value) {
+      return value.slice(0, -3)
     }
   },
   created () {

@@ -10,6 +10,12 @@ app.use(bodyParser.json())
 app.use(express.static(__dirname + '/front/dist'))
 app.use(cookieParser())
 
+// 设置响应头
+app.all('*', function (req, res, next) {
+	res.header('content-type', 'application/json;charset=utf-8')
+	next()
+})
+
 // 处理返回异常
 const apiUrl = 'https://api.bmob.cn/1/classes/'
 const headerText = Config.bmob
@@ -92,15 +98,23 @@ app.post('/Statistics.html', function (req, res) {
 	const lastDay = new Date(year, formatMonth, 0).getDate()
 	const startTime = `${year}-${formatMonth}-01`
 	const endTime = `${year}-${formatMonth}-${lastDay}`
+	// 查询条件 {"$and":[{"startTime":{"$gte":{"__type": "Date", "iso": "2018-05-01 00:00:00"}}}, {"startTime":{"$lte":{"__type": "Date", "iso": "2018-05-31 23:59:59"}}},{"status": 0}]}
 	const url = `List?where=%7B%22$and%22:%5B%7B%22startTime%22:%7B%22$gte%22:%7B%22__type%22:%20%22Date%22,%20%22iso%22:%20%22${startTime}%2000:00:00%22%7D%7D%7D,%20%7B%22startTime%22:%7B%22$lte%22:%7B%22__type%22:%20%22Date%22,%20%22iso%22:%20%22${endTime}%2023:59:59%22%7D%7D%7D,%7B%22status%22:%200%7D%5D%7D`
 
 	restful((data) => {
 		let result = []
+		let summary = {
+			count: 0,
+			cost: 0,
+			period: 0
+		}
+
 		data.results.forEach(item => {
 			const index = result.findIndex(row => row.userName === item.userName)
 			if (index > -1) {
 				result[index].count += 1
 				result[index].period += item.period
+				result[index].cost = Number((result[index].cost + item.cost).toFixed(2)) // 规避浮点数计算精度问题
 				result[index].children.push(
 					{
 						id: item.objectId,
@@ -115,6 +129,7 @@ app.post('/Statistics.html', function (req, res) {
 					userName: item.userName,
 					count: 1,
 					period: item.period,
+					cost: item.cost,
 					children: [
 						{
 							id: item.objectId,
@@ -126,8 +141,17 @@ app.post('/Statistics.html', function (req, res) {
 					]
 				})
 			}
+			summary.count += 1
+			summary.period += item.period
+			summary.cost = Number((summary.cost + item.cost).toFixed(2)) // 规避浮点数计算精度问题
 		})
-		res.end(formatResponse({result: result}))
+
+		const results = {
+			result,
+			summary
+		}
+
+		res.end(formatResponse(results))
 	}, res, url)
 })
 
