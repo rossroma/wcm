@@ -2,7 +2,7 @@
   "name": "wcm",
   "version": "1.0.0",
   "description": "watering charge management",
-  "author": "杨凯 <906580223@qq.com>",
+  "author": "rossroma <906580223@qq.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",

@@ -2,7 +2,7 @@
   <div id="app" class="app">
     <header class="header">
       <h1 class="title">
-        灌溉收费管理系统（内侧）
+        灌溉收费管理系统（内测）
       </h1>
     </header>
     <router-view></router-view>
