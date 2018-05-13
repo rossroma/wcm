@@ -12,6 +12,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
+        // mocck
+        // target: 'http://yapi.xbongbong.com/mock/45/'
         target: 'http://127.0.0.1',
         changeOrigin: true,
         pathRewrite: {

@@ -19,6 +19,7 @@
       class="table-list"
       :data="tableData"
       :height="tableHeight"
+      v-loading="loading"
       style="width=100%">
       <el-table-column
         label="日期"
@@ -58,7 +59,7 @@
         label="费用"
         width="140">
         <template slot-scope="scope">
-          <span class="cost">{{ scope.row.cost }}</span>元
+          <span class="cost">{{ scope.row.cost | formatMoney }}</span>元
         </template>
       </el-table-column>
       <el-table-column
@@ -87,6 +88,8 @@
         :page-sizes="[10, 20, 50, 100]"
         :page-size="pageInfos.size"
         :current-page.sync="pageInfos.current"
+        @size-change="handleSizeChange"
+        @current-change="getList"
         class="pagination">
       </el-pagination>
     </div>
@@ -123,6 +126,7 @@ export default {
   data () {
     return {
       tableData: [],
+      pageSizes: [10, 20, 50, 100],
       pageInfos: {
         size: 20,
         current: 1,
@@ -131,7 +135,8 @@ export default {
       tableHeight: tableHeight,
       // 编辑/新建相关
       isItemShow: false,
-      item: {}
+      item: {},
+      loading: false
     }
   },
 
@@ -146,7 +151,8 @@ export default {
   },
 
   methods: {
-    getList () {
+    getList (e) {
+      this.loading = true
       const url = 'List.html'
       const params = {
         pageSize: this.pageInfos.size,
@@ -161,7 +167,16 @@ export default {
         .then((data) => {
           this.tableData = data.result
           this.pageInfos.count = data.count
+          this.loading = false
         })
+        .then(() => {
+          this.loading = false
+        })
+    },
+
+    handleSizeChange (value) {
+      this.pageInfos.size = value
+      this.getList()
     },
 
     // 新增记录
@@ -260,6 +275,10 @@ export default {
       const hh = Math.floor(value / 60)
       const mm = value % 60
       return `${hh}时${mm}分`
+    },
+
+    formatMoney (value) {
+      return value.toFixed(2)
     }
   },
 

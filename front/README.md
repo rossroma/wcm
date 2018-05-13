@@ -1,6 +1,6 @@
-# wcm
+# wcm-front
 
-> watering charge management
+> 灌溉收费管理系统（Watering Charge Management）
 
 ## Build Setup
 
@@ -24,4 +24,22 @@ npm run unit
 npm test
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
+
+### 开启mock模式
+
+`/front/config/index.js`，修改proxyTable的target属性值为：`http://yapi.xbongbong.com/mock/45/`
+
+```javascript
+    proxyTable: {
+      '/api': {
+        // mocck
+        target: 'http://yapi.xbongbong.com/mock/45/'
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
+        }
+      }
+    },
+```
+

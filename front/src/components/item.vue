@@ -5,7 +5,7 @@
       :visible.sync="dialogVisible"
       width="800px"
       :before-close="closeDialog">
-      <div class="form-wrap" v-if="editStatus">
+      <div class="form-wrap" v-if="editStatus" v-loading="loading">
         <el-form ref="form" :model="form" label-width="120px" :rules="rules">
           <el-form-item label="姓名" prop="userName">
             <el-input v-model="form.userName" @blur="trimValue"></el-input>
@@ -88,7 +88,7 @@
       <span slot="footer" class="dialog-footer">
         <template v-if="editStatus">
           <el-button @click="closeDialog">取 消</el-button>
-          <el-button type="primary" @click="handleSubmit('form')">保 存</el-button>
+          <el-button :disabled="loading" type="primary" @click="handleSubmit('form')">保 存</el-button>
         </template>
         <template v-else>
           <el-button type="danger" plain @click="editStatus = true">修 改</el-button>
@@ -121,7 +121,10 @@ export default {
       dialogVisible: true,
       form: {},
       rules: {
-        userName: { required: true, message: '请输入姓名', trigger: 'blur' },
+        userName: [
+          { required: true, message: '请输入姓名', trigger: 'blur' },
+          { min: 2, max: 4, message: '长度在 3 到 4 个字符', trigger: 'blur' }
+        ],
         date1: { required: true, message: '请选择开井日期', trigger: 'change' },
         time1: { required: true, message: '请选择开井时间', trigger: 'change' },
         date2: { required: true, message: '请选择关井日期', trigger: 'change' },
@@ -159,7 +162,8 @@ export default {
         period: '',
         cost: ''
       },
-      editStatus: true
+      editStatus: true,
+      loading: false
     }
   },
 
@@ -247,6 +251,7 @@ export default {
 
     // 保存数据
     saveData (data) {
+      this.loading = true
       const url = 'Item.html'
       const params = {
         id: this.form.id || 0,
@@ -261,6 +266,10 @@ export default {
           this.$set(this.form, 'id', data.id)
           this.editStatus = false
           this.$emit('refresh')
+          this.loading = false
+        })
+        .then(() => {
+          this.loading = false
         })
     },
 

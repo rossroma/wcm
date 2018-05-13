@@ -31,6 +31,7 @@
     <el-table
       ref="table"
       class="table-list"
+      v-loading="loading"
       :data="tableData"
       :height="tableHeight"
       show-summary
@@ -69,6 +70,9 @@
             <el-table-column
               prop="cost"
               label="费用(元)">
+              <template slot-scope="scope">
+                {{ scope.row.cost | formatMoney }}
+              </template>
             </el-table-column>
           </el-table>
         </template>
@@ -92,7 +96,7 @@
         prop="cost"
         label="费用小计">
         <template slot-scope="scope">
-          <span class="cost">{{ scope.row.cost }}</span>元
+          <span class="cost">{{ scope.row.cost | formatMoney }}</span>元
         </template>
       </el-table-column>
     </el-table>
@@ -130,12 +134,14 @@ export default {
           return time.getTime() > Date.now()
         }
       },
-      expandButtonText: '全部展开'
+      expandButtonText: '全部展开',
+      loading: false
     }
   },
 
   methods: {
     getList () {
+      this.loading = true
       const url = 'Statistics.html'
       const params = {
         month: this.month.getTime()
@@ -145,6 +151,10 @@ export default {
         .then((data) => {
           this.tableData = data.result
           this.summary = data.summary
+          this.loading = false
+        })
+        .then(() => {
+          this.loading = false
         })
     },
 
@@ -188,6 +198,10 @@ export default {
 
     formatDateTime (value) {
       return value.slice(0, -3)
+    },
+
+    formatMoney (value) {
+      return value.toFixed(2)
     }
   },
   created () {

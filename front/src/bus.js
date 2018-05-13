@@ -23,17 +23,17 @@ const axios = function (url, params, method = 'post') {
   })
 }
 
-// 封装sessionStorage
+// 封装localStorage
 const storage = function () {
   return {
     set: function (key, value) {
-      window.sessionStorage.setItem(key, value)
+      window.localStorage.setItem(key, value)
     },
     get: function (key) {
-      return window.sessionStorage.getItem(key)
+      return window.localStorage.getItem(key)
     },
     remove: function (key) {
-      window.sessionStorage.removeItem(key)
+      window.localStorage.removeItem(key)
     }
   }
 }
