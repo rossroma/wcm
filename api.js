@@ -67,7 +67,7 @@ app.post('/List.html', function (req, res) {
 	const currentPage = req.body.currentPage || 1
 	const skip = pageSize * (currentPage - 1)
 	const status = req.body.status || 0
-	const url = `List?where=%7B%22status%22:${status}%7D&limit=${pageSize}&count=1&skip=${skip}`
+	const url = `List?where=%7B%22status%22:${status}%7D&limit=${pageSize}&count=1&skip=${skip}&order=-startTime`
 
 	restful((data) => {
 		let result = {
@@ -103,11 +103,9 @@ app.post('/Statistics.html', function (req, res) {
 
 	restful((data) => {
 		let result = []
-		let summary = {
-			count: 0,
-			cost: 0,
-			period: 0
-		}
+		let count = 0
+		let period = 0
+		let cost = 0
 
 		data.results.forEach(item => {
 			const index = result.findIndex(row => row.userName === item.userName)
@@ -141,16 +139,23 @@ app.post('/Statistics.html', function (req, res) {
 					]
 				})
 			}
-			summary.count += 1
-			summary.period += item.period
-			summary.cost = Number((summary.cost + item.cost).toFixed(2)) // 规避浮点数计算精度问题
+			count += 1
+			period += item.period
+			cost = Number((cost + item.cost).toFixed(2)) // 规避浮点数计算精度问题
 		})
-
+		function toHHMM (value) {
+			const hh = Math.floor(value / 60)
+			const mm = value % 60
+			return `${hh}时${mm}分`
+		}
 		const results = {
 			result,
-			summary
+			summary: {
+				cost: (cost).toFixed(2) + '元',
+				period: toHHMM(period),
+				count: count + '次'
+			}
 		}
-
 		res.end(formatResponse(results))
 	}, res, url)
 })
