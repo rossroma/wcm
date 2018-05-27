@@ -59,6 +59,7 @@ export default {
 .content {
   flex: 1 1 auto;
   background-color: #fff;
+  margin: 0 auto;
   min-width: 1200px;
   display: flex;
   padding: 15px 0;
