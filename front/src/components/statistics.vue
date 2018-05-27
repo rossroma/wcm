@@ -6,10 +6,10 @@
         <el-breadcrumb-item>{{currentNav}}</el-breadcrumb-item>
       </el-breadcrumb>
       <el-button
-        disabled
         type="success"
         size="small"
-        class="add-button">
+        class="add-button"
+        @click="handleExport">
         导出
       </el-button>
     </div>
@@ -30,6 +30,7 @@
 
     <el-table
       ref="table"
+      id="table"
       class="table-list"
       v-loading="loading"
       :data="tableData"
@@ -144,9 +145,9 @@ export default {
       this.loading = true
       const url = 'Statistics.html'
       const params = {
-        month: this.month.getTime()
+        timeStamp: this.month.getTime()
       }
-
+      console.log(this.month.getTime())
       axios(url, params)
         .then((data) => {
           this.tableData = data.result
@@ -186,6 +187,12 @@ export default {
     // 计算统计信息
     computedSummary ({ columns, data }) {
       return ['', '总计', this.summary.count, this.summary.period, this.summary.cost]
+    },
+
+    // 导出
+    handleExport () {
+      const url = '/exportExcel/' + this.month.getTime()
+      window.location = url
     }
   },
 
