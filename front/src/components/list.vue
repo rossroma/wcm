@@ -302,11 +302,11 @@ export default {
       .add-button {
         position: absolute;
         right: 10px;
-        top: -7px;
+        top: -5px;
       }
     }
     .table-list {
-      margin-top: 20px;
+      margin-top: 15px;
       .cost {
         color: red;
         font-weight: bold;
@@ -317,7 +317,7 @@ export default {
       }
     }
     .main-foot {
-      margin-top: 20px;
+      margin-top: 15px;
       text-align: right;
     }
   }

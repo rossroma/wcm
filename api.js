@@ -64,7 +64,7 @@ function restful(callback, res, url, methType = 'GET', body) {
 }
 
 // 拼接统计参数
-function spliceParams (timeStamp = new Date()) {
+function spliceParams (timeStamp) {
 	const date = new Date(timeStamp)
 	const year = date.getFullYear()
 	const month = Number(date.getMonth()) + 1
@@ -196,7 +196,8 @@ app.post('/List.html', function (req, res) {
 // 统计列表
 app.post('/Statistics.html', function (req, res) {
 	// 拼接url
-	const url = spliceParams(req.body.timeStamp)
+	const timestamp = req.body.timeStamp - 0 // 转为数字格式
+	const url = spliceParams(timestamp)
 	restful((data) => {
 		const results = getStatisticsResults(data)
 		res.end(formatResponse(results))
@@ -253,8 +254,13 @@ app.get('/', function (req, res) {
 // disable interface layout.hbs  user config layout: false
 app.get('/exportExcel/:timestamp', function(req, res, next) {
 	// 拼接url
-	const url = spliceParams(req.params.timeStamp)
-	console.log('统计日期', req.params)
+	const timestamp = req.params.timestamp - 0 // 转为数字格式
+	const url = spliceParams(timestamp)
+
+	// fileName
+	const date = new Date(timestamp)
+	const fileName = `${date.getFullYear()}-${date.getMonth() + 1}月份电费统计`
+	console.log('统计日期', new Date(timestamp))
 	restful((data) => {
 		// sheet1
 		let conf = {}
@@ -317,7 +323,7 @@ app.get('/exportExcel/:timestamp', function(req, res, next) {
 		conf2.rows = createSheet2(resultsData.result)
 		const result = nodeExcel.execute([conf, conf2])
 		res.setHeader('Content-Type', 'application/vnd.openxmlformats;charset=utf-8')
-		res.setHeader("Content-Disposition", "attachment; filename=" + encodeURIComponent("导出列表") + ".xlsx")
+		res.setHeader("Content-Disposition", "attachment; filename=" + encodeURIComponent(fileName) + ".xlsx")
 		res.end(result, 'binary')
 	}, res, url)
 })

@@ -16,6 +16,7 @@
 
     <div class="panel">
       <el-button @click="toggleExpansion">{{expandButtonText}}</el-button>
+      <label class="filter-label">按月份筛选：</label>
       <el-date-picker
         v-model="month"
         type="month"
@@ -147,7 +148,6 @@ export default {
       const params = {
         timeStamp: this.month.getTime()
       }
-      console.log(this.month.getTime())
       axios(url, params)
         .then((data) => {
           this.tableData = data.result
@@ -231,18 +231,22 @@ export default {
       .add-button {
         position: absolute;
         right: 10px;
-        top: -7px;
+        top: -5px;
       }
     }
     .panel {
-      margin-top: 20px;
+      margin-top: 15px;
       text-align: right;
       .el-button{
         float: left;
       }
+      .filter-label {
+        font-size: 14px;
+        color: #666666;
+      }
     }
     .table-list {
-      margin-top: 20px;
+      margin-top: 15px;
       .cost {
         color: red;
         font-weight: bold;
@@ -251,10 +255,6 @@ export default {
       .red {
         color: red;
       }
-    }
-    .main-foot {
-      margin-top: 20px;
-      text-align: right;
     }
   }
 

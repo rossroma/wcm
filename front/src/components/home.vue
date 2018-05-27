@@ -1,6 +1,9 @@
 <template>
   <div class="content">
     <div class="aside">
+      <h1 class="title">
+        灌溉收费管理系统
+      </h1>
       <el-menu
         :default-active="path"
         @select="handleSelect">
@@ -55,14 +58,22 @@ export default {
 <style lang="less" scoped>
 .content {
   flex: 1 1 auto;
-  margin: 15px auto 0;
   background-color: #fff;
   min-width: 1200px;
   display: flex;
-  padding: 20px 0;
+  padding: 15px 0;
   .aside {
     width: 200px;
     flex: 0 0 200px;
+    .title {
+      font-size: 20px;
+      line-height: 1;
+      margin: 0 5px;
+      text-align: center;
+      height: 38px;
+      border-bottom: 5px solid #ebeef5;
+      margin-bottom: 10px;
+    }
   }
 }
 </style>
