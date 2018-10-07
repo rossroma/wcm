@@ -166,8 +166,10 @@ export default {
 
     // 全部展开、全部折叠
     toggleExpansion () {
+      // 即将要操作的状态
+      const bool = this.expandButtonText === '全部展开'
       this.tableData.forEach(row => {
-        this.$refs.table.toggleRowExpansion(row)
+        this.$refs.table.toggleRowExpansion(row, bool)
       })
     },
 
