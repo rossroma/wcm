@@ -8,7 +8,11 @@
       <div class="form-wrap" v-if="editStatus" v-loading="loading">
         <el-form ref="form" :model="form" label-width="120px" :rules="rules">
           <el-form-item label="姓名" prop="userName">
-            <el-input v-model="form.userName" @blur="trimValue"></el-input>
+            <el-autocomplete
+              v-model="form.userName"
+              :fetch-suggestions="querySearch"
+              placeholder="请输入姓名"
+            ></el-autocomplete>
           </el-form-item>
           <el-form-item label="开井时间">
             <el-col :span="11">
@@ -101,6 +105,8 @@
 
 <script>
 import { axios } from '@/bus'
+import $utils from '@/utils'
+
 const originForm = {
   userName: '',
   date1: '',
@@ -123,7 +129,7 @@ export default {
       rules: {
         userName: [
           { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 2, max: 4, message: '长度在 3 到 4 个字符', trigger: 'blur' }
+          { min: 2, max: 4, message: '长度在 2 到 4 个字符', trigger: 'blur' }
         ],
         date1: { required: true, message: '请选择开井日期', trigger: 'change' },
         time1: { required: true, message: '请选择开井时间', trigger: 'change' },
@@ -163,7 +169,9 @@ export default {
         cost: ''
       },
       editStatus: true,
-      loading: false
+      loading: false,
+      // 历史用户列表
+      userHistoryList: $utils.getStorage('WCM_userlist') || []
     }
   },
 
@@ -196,9 +204,22 @@ export default {
       }
     },
 
-    // 对userName进行trim
-    trimValue (value) {
-      this.form.userName = this.form.userName.trim()
+    // 返回搜索建议
+    querySearch (queryString, cb) {
+      const results = queryString ? this.userHistoryList.filter(this.createFilter(queryString)) : this.userHistoryList
+      const formatResults = results.map(val => {
+        return {
+          value: val
+        }
+      })
+      // 调用 callback 返回建议列表的数据
+      cb(formatResults)
+    },
+
+    createFilter (queryString) {
+      return (item) => {
+        return (item.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
     },
 
     // 监听开井日期的变化
@@ -240,13 +261,16 @@ export default {
         return false
       }
       this.formatData = {
-        userName: copyForm.userName,
+        userName: copyForm.userName.trim(),
         startTime: startTime,
         endTime: endTime,
         period: period,
         cost: cost
       }
       this.saveData(this.formatData)
+
+      // 保存时，将userName混存到LocalStorage
+      this.addUserCache(this.formatData.userName)
     },
 
     // 保存数据
@@ -283,6 +307,14 @@ export default {
       this.form = copyForm
 
       this.editStatus = true
+    },
+
+    // 将用户缓存在LocalStorage中
+    addUserCache (name) {
+      if (this.userHistoryList.indexOf(name) === -1) {
+        this.userHistoryList.push(name)
+        $utils.setStorage('WCM_userlist', this.userHistoryList)
+      }
     },
 
     closeDialog () {
